@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/Telefonica/govice.svg?branch=master)](https://travis-ci.org/Telefonica/govice)
+[![Build Status](https://api.travis-ci.org/Telefonica/govice.svg?branch=master)](https://travis-ci.org/Telefonica/govice) [![Coverage Status](https://coveralls.io/repos/Telefonica/govice/badge.svg?branch=master&service=github)](https://coveralls.io/github/Telefonica/govice?branch=master)
 
 # govice
 
