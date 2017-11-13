@@ -20,7 +20,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/telefonica/govice"
+	"github.com/Telefonica/govice"
 )
 
 type config struct {

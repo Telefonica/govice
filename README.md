@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/Telefonica/govice.svg?branch=master)](https://travis-ci.org/Telefonica/govice)
+
 # govice
 
 Libraries to **serve and protect** your services implemented in golang.
@@ -25,7 +27,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/telefonica/govice"
+	"github.com/Telefonica/govice"
 )
 
 type config struct {
@@ -149,7 +151,7 @@ package main
 import (
 	"time"
 
-	"github.com/telefonica/govice"
+	"github.com/Telefonica/govice"
 )
 
 type demoContext struct {
@@ -213,7 +215,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/telefonica/govice"
+	"github.com/Telefonica/govice"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {

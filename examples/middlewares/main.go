@@ -22,7 +22,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/telefonica/govice"
+	"github.com/Telefonica/govice"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {

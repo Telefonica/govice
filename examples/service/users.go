@@ -23,7 +23,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/telefonica/govice"
+	"github.com/Telefonica/govice"
 )
 
 // User type.

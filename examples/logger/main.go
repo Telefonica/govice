@@ -20,7 +20,7 @@ package main
 import (
 	"time"
 
-	"github.com/telefonica/govice"
+	"github.com/Telefonica/govice"
 )
 
 type demoContext struct {
