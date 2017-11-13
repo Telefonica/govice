@@ -116,10 +116,7 @@ func (v *Validator) validateRequestBody(schemaName string, r *http.Request, o in
 // ValidateObject to validate an object against a JSON schema.
 func (v *Validator) ValidateObject(schemaName string, data interface{}) error {
 	documentLoader := gojsonschema.NewGoLoader(data)
-	if err := v.validate(schemaName, documentLoader); err != nil {
-		return err
-	}
-	return nil
+	return v.validate(schemaName, documentLoader)
 }
 
 // ValidateBytes reads a byte array, validates it against a JSON schema, and unmarshall it.

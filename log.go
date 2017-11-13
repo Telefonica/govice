@@ -72,7 +72,7 @@ func NewLogger() *Logger {
 	}
 }
 
-// SetDefaultLogLevel sets the default log level. This default can be overriden with SetLevel method.
+// SetDefaultLogLevel sets the default log level. This default can be overridden with SetLevel method.
 func SetDefaultLogLevel(level string) {
 	defaultLogLevel = levelByName(level)
 }

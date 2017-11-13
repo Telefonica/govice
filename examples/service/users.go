@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/Telefonica/govice"
+	"github.com/gorilla/mux"
 )
 
 // User type.

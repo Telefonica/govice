@@ -24,8 +24,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/Telefonica/govice"
+	"github.com/gorilla/mux"
 )
 
 type config struct {
