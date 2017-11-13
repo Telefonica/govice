@@ -1,0 +1,24 @@
+{
+    "title": "Request schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "name",
+        "realm"
+    ],
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "realm": {
+            "enum": [
+                "es",
+                "tu",
+                "uk",
+                "br",
+                "ar",
+                "pe"
+            ]
+        }
+    }
+}

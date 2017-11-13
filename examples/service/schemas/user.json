@@ -1,0 +1,21 @@
+{
+    "title": "User schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "login",
+        "name",
+        "pin"
+    ],
+    "properties": {
+        "login": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "pin": {
+            "type": "number"
+        }
+    }
+}

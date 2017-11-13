@@ -1,0 +1,7 @@
+{
+    "address": ":80",
+    "basePath": "/users",
+    "logLevel": "INFO",
+    "realm": "es"
+  }
+  
