@@ -116,7 +116,7 @@ func TestWithLog(t *testing.T) {
 func TestWithMethodNotAllowed(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("GET", "/users", nil)
-	withMethodNotAllowed := WithMethodNotAllowed([]string{"POST", "DELETE"})
+	withMethodNotAllowed := WithMethodNotAllowed("POST", "DELETE")
 	withMethodNotAllowed(w, r)
 
 	actual := w.Header().Get("Allow")

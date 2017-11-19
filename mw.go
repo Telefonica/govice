@@ -124,7 +124,7 @@ func WithLog(next http.HandlerFunc) http.HandlerFunc {
 
 // WithMethodNotAllowed is a middleware to reply with an error when the HTTP method is not supported.
 // The allowedMethods must be a list of HTTP methods.
-func WithMethodNotAllowed(allowedMethods []string) http.HandlerFunc {
+func WithMethodNotAllowed(allowedMethods ...string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Allow", strings.Join(allowedMethods, ", "))
 		w.WriteHeader(http.StatusMethodNotAllowed)
