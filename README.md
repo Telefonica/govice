@@ -177,9 +177,9 @@ func main() {
 The output of the previous command is:
 
 ```
-{"time":"2017-11-12T23:29:55.929198687Z","lvl":"INFO","svc":"logger","comp":"demo","msg":"Logging without context"}
-{"time":"2017-11-12T23:29:55.929333925Z","lvl":"WARN","svc":"logger","comp":"demo","msg":"Logging with 2 arguments"}
-{"time":"2017-11-12T23:29:55.929355491Z","lvl":"INFO","svc":"logger","comp":"demo","feat":3,"msg":"Logging with context"}
+{"time":"2017-11-12T23:29:55.929Z","lvl":"INFO","svc":"logger","comp":"demo","msg":"Logging without context"}
+{"time":"2017-11-12T23:29:55.929Z","lvl":"WARN","svc":"logger","comp":"demo","msg":"Logging with 2 arguments"}
+{"time":"2017-11-12T23:29:55.929Z","lvl":"INFO","svc":"logger","comp":"demo","feat":3,"msg":"Logging with context"}
 ```
 
 Note that the logger context supports other data types beyond strings. This is really important to build up metrics based on logs.
@@ -236,8 +236,8 @@ func main() {
 This example creates the following log records:
 
 ```
-{"time":"2017-11-13T08:01:51.335480728Z","lvl":"INFO","trans":"e7fc31ab-c848-11e7-8ed5-186590e007bb","corr":"e7fc31ab-c848-11e7-8ed5-186590e007bb","svc":"logger","comp":"demo","method":"GET","path":"/","remoteaddr":"[::1]:49636","msg":"Request"}
-{"time":"2017-11-13T08:01:51.335546998Z","lvl":"INFO","trans":"e7fc31ab-c848-11e7-8ed5-186590e007bb","corr":"e7fc31ab-c848-11e7-8ed5-186590e007bb","svc":"logger","comp":"demo","status":200,"msg":"Response"}
+{"time":"2017-11-13T08:01:51.335Z","lvl":"INFO","trans":"e7fc31ab-c848-11e7-8ed5-186590e007bb","corr":"e7fc31ab-c848-11e7-8ed5-186590e007bb","svc":"logger","comp":"demo","method":"GET","path":"/","remoteaddr":"[::1]:49636","msg":"Request"}
+{"time":"2017-11-13T08:01:51.335Z","lvl":"INFO","trans":"e7fc31ab-c848-11e7-8ed5-186590e007bb","corr":"e7fc31ab-c848-11e7-8ed5-186590e007bb","svc":"logger","comp":"demo","status":200,"msg":"Response"}
 ```
 
 Note that the log context passed to **WithLogContext** middleware must follow the type **govice.LogContext**. This is required because the middleware sets the transactionID and correlator in this context.

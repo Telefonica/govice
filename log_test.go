@@ -19,7 +19,7 @@ package govice
 
 import (
 	"bytes"
-	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -83,8 +83,7 @@ func TestLoggerContext(t *testing.T) {
 func TestWriteDoc(t *testing.T) {
 	time.Local = time.UTC
 	now := time.Now()
-	nowBytes, _ := json.Marshal(now)
-	nowStr := string(nowBytes)
+	nowStr := fmt.Sprintf(`"%s"`, now.Format(RFC3339Milli))
 
 	ctxtA := LogContext{TransactionID: "txid", Operation: "opA"}
 	ctxtB := ReqLogContext{Method: "GET"}

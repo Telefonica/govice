@@ -31,6 +31,9 @@ import (
 	"time"
 )
 
+// RFC3339Milli date layout
+const RFC3339Milli = "2006-01-02T15:04:05.000Z07:00"
+
 // LogLevelNames is an array with the valid log levels.
 var LogLevelNames = []string{"DEBUG", "INFO", "WARN", "ERROR", "FATAL"}
 
@@ -110,7 +113,7 @@ func (l *Logger) log(logLevel level, context interface{}, message string, args .
 
 func writeDoc(buf *bytes.Buffer, time time.Time, level string, context, customContext interface{}, message string) {
 	buf.WriteByte('{')
-	writeField(buf, "time", time)
+	writeField(buf, "time", time.Format(RFC3339Milli))
 	buf.WriteByte(',')
 	writeField(buf, "lvl", level)
 	buf.WriteByte(',')
