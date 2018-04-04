@@ -100,6 +100,16 @@ func (l *Logger) GetLevel() string {
 	return LogLevelNames[l.logLevel]
 }
 
+// SetWriter to set the log writer
+func (l *Logger) SetWriter(o io.Writer) {
+	l.out = o
+}
+
+// GetWriter to get the log writer
+func (l *Logger) GetWriter() io.Writer {
+	return l.out
+}
+
 func (l *Logger) log(logLevel level, context interface{}, message string, args ...interface{}) {
 	if logLevel >= l.logLevel {
 		var buf bytes.Buffer
