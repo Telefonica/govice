@@ -18,15 +18,15 @@
 package govice
 
 import (
+	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 	"time"
-	"os"
-	"bufio"
-	"io/ioutil"
-	"encoding/json"
 )
 
 func TestLevelByName(t *testing.T) {
@@ -120,7 +120,6 @@ func TestLoggerOutput(t *testing.T) {
 		t.Error("Not expected output writer interface")
 	}
 }
-
 
 func TestLoggerContext(t *testing.T) {
 	logger := NewLogger()
@@ -377,6 +376,29 @@ func TestFatal(t *testing.T) {
 	}
 }
 
+func TestLogLevelMismatch(t *testing.T) {
+	tests := []struct {
+		loggerLvl level
+		recordLvl level
+		msg       string
+		args      []interface{}
+	}{
+		{infoLevel, debugLevel, "This is a demo", []interface{}{}},
+		{warnLevel, debugLevel, "This is a %s", []interface{}{"test"}},
+		{errorLevel, infoLevel, "This is a %s with loglevel %s", []interface{}{"test", "mismatch"}},
+		{fatalLevel, debugLevel, "This is a demo", []interface{}{}},
+		{fatalLevel, warnLevel, "This is a demo", []interface{}{}},
+	}
+	for _, test := range tests {
+		var buf bytes.Buffer
+		logger := &Logger{out: &buf, logLevel: test.loggerLvl}
+		logger.log(test.recordLvl, nil, test.msg, test.args...)
+		if buf.String() != "" {
+			t.Errorf("Invalid log. Expected no entry but received: %s", buf.String())
+		}
+	}
+}
+
 func TestStdLogger(t *testing.T) {
 	var buf bytes.Buffer
 	logger := &Logger{out: &buf, logLevel: infoLevel}
@@ -388,12 +410,15 @@ func TestStdLogger(t *testing.T) {
 	}
 }
 
-// func TestStdCLogger(t *testing.T) {
-// 	var buf bytes.Buffer
-// 	l := NewStdLoggerC(ctxtA)
-// 	l.Printf("This is a demo")
-// 	expected := `,"lvl":"ERROR","msg":"This is a demo"}` + "\n"
-// 	if extractFirstField(buf.String()) != expected {
-// 		t.Errorf("Invalid std log. Actual: %s. Expected to end with: %s", buf.String(), expected)
-// 	}
-// }
+func TestStdLoggerC(t *testing.T) {
+	l := NewStdLoggerC(ctxtA)
+	var buf bytes.Buffer
+	l.SetOutput(&buf)
+	l.Printf("This is demo")
+	// Note that the check is a hack because it actually prints out the following log entry
+	// {"time":"2018-04-23T17:51:49.885+02:00","lvl":"ERROR","trans":"txid","op":"op1","msg":"This is demo"}
+	expected := "This is demo\n"
+	if buf.String() != expected {
+		t.Errorf("Invalid std log. Actual: %s. Expected : %s", buf.String(), expected)
+	}
+}

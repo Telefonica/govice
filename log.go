@@ -111,14 +111,19 @@ func (l *Logger) GetWriter() io.Writer {
 }
 
 func (l *Logger) log(logLevel level, context interface{}, message string, args ...interface{}) {
-	if logLevel >= l.logLevel {
-		var buf bytes.Buffer
-		writeDoc(&buf, time.Now(), LogLevelNames[logLevel], l.context, context, fmt.Sprintf(message, args...))
-		bytes := buf.Bytes()
-		l.mutex.Lock()
-		defer l.mutex.Unlock()
-		l.out.Write(bytes)
+	if logLevel < l.logLevel {
+		return
 	}
+	text := message
+	if len(args) > 0 {
+		text = fmt.Sprintf(message, args...)
+	}
+	var buf bytes.Buffer
+	writeDoc(&buf, time.Now(), LogLevelNames[logLevel], l.context, context, text)
+	bytes := buf.Bytes()
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	l.out.Write(bytes)
 }
 
 func writeDoc(buf *bytes.Buffer, time time.Time, level string, context, customContext interface{}, message string) {
