@@ -65,8 +65,9 @@ func TestWithLog(t *testing.T) {
 	r := httptest.NewRequest("GET", "/users", nil)
 	r.Header.Add("Unica-Correlator", "corr")
 	var buf bytes.Buffer
-	var ctx LogContext
-	logger := newContextLogger(r, &ctx)
+	var ctxt LogContext
+	logger := NewLogger()
+	logger.SetLogContext(InitContext(r, &ctxt))
 	logger.out = &buf
 	r = r.WithContext(context.WithValue(r.Context(), LoggerContextKey, logger))
 	handler := func(w http.ResponseWriter, r *http.Request) {

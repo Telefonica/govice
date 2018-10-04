@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/imdario/mergo"
 )
 
 // CorrelatorHTTPHeader contains the name of the HTTP header that transports the correlator.
@@ -60,28 +59,29 @@ func newTransactionID() string {
 	return UUID.String()
 }
 
-func newContextLogger(r *http.Request, ctx *LogContext) *Logger {
-	logger := NewLogger()
-	newCtx := NewType(ctx).(*LogContext)
-	logger.SetLogContext(newCtx)
-	if err := mergo.Merge(newCtx, ctx); err != nil {
-		return logger
+// InitContext clones the context (to avoid reusing the same context attributes from previous requests)
+// and initializes the transactionId and correlator.
+func InitContext(r *http.Request, ctxt Context) Context {
+	newCtxt := ctxt.Clone()
+	trans := newTransactionID()
+	corr := r.Header.Get(CorrelatorHTTPHeader)
+	if corr == "" {
+		corr = trans
+		r.Header.Add(CorrelatorHTTPHeader, corr)
 	}
-	newCtx.TransactionID = newTransactionID()
-	if newCtx.Correlator = r.Header.Get(CorrelatorHTTPHeader); newCtx.Correlator == "" {
-		newCtx.Correlator = newCtx.TransactionID
-		r.Header.Add(CorrelatorHTTPHeader, newCtx.Correlator)
-	}
-	return logger
+	newCtxt.SetTransactionID(trans)
+	newCtxt.SetCorrelator(corr)
+	return newCtxt
 }
 
 // WithLogContext is a middleware constructor to initialize the log context with the
 // transactionID and correlator. It also stores the logger in the golang context.
-// Note that the context is initialized with an initial context (see ctx).
-func WithLogContext(ctx *LogContext) func(http.HandlerFunc) http.HandlerFunc {
+// Note that the context is initialized with an initial context (see ctxt).
+func WithLogContext(ctxt Context) func(http.HandlerFunc) http.HandlerFunc {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
-			logger := newContextLogger(r, ctx)
+			logger := NewLogger()
+			logger.SetLogContext(InitContext(r, ctxt))
 			next(w, r.WithContext(context.WithValue(r.Context(), LoggerContextKey, logger)))
 		}
 	}
@@ -95,10 +95,11 @@ func WithLog(next http.HandlerFunc) http.HandlerFunc {
 		logger := GetLogger(r)
 		isNewLogger := false
 		if logger == nil {
-			logger = newContextLogger(r, &LogContext{})
+			logger := NewLogger()
+			logger.SetLogContext(InitContext(r, &LogContext{}))
 			isNewLogger = true
 		}
-		logContext := logger.GetLogContext().(*LogContext)
+		logContext := logger.GetLogContext().(Context)
 		reqContext := ReqLogContext{
 			Path:       r.RequestURI,
 			Method:     r.Method,
@@ -107,7 +108,7 @@ func WithLog(next http.HandlerFunc) http.HandlerFunc {
 		logger.InfoC(reqContext, RequestLogMessage)
 		logger.DebugRequest(RequestLogMessage, r)
 		lw := &LoggableResponseWriter{Status: http.StatusOK, ResponseWriter: w}
-		lw.Header().Set(CorrelatorHTTPHeader, logContext.Correlator)
+		lw.Header().Set(CorrelatorHTTPHeader, logContext.GetCorrelator())
 		if isNewLogger {
 			next(lw, r.WithContext(context.WithValue(r.Context(), LoggerContextKey, logger)))
 		} else {
@@ -140,13 +141,15 @@ func WithNotFound() http.HandlerFunc {
 
 // GetLogger to get the logger from the request context.
 func GetLogger(r *http.Request) *Logger {
-	return r.Context().Value(LoggerContextKey).(*Logger)
+	logger, _ := r.Context().Value(LoggerContextKey).(*Logger)
+	return logger
 }
 
 // GetLogContext gets the log context associated to a request.
 func GetLogContext(r *http.Request) *LogContext {
 	if logger := GetLogger(r); logger != nil {
-		return logger.GetLogContext().(*LogContext)
+		ctxt, _ := logger.GetLogContext().(*LogContext)
+		return ctxt
 	}
 	return nil
 }

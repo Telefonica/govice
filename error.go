@@ -112,19 +112,24 @@ var NotFoundError = &Error{
 
 // ReplyWithError to send a HTTP response with the error document.
 func ReplyWithError(w http.ResponseWriter, r *http.Request, err error) {
+	logger := GetLogger(r)
 	switch e := err.(type) {
 	case *Error:
-		if e.Status >= http.StatusBadRequest && e.Status < http.StatusInternalServerError {
-			GetLogger(r).Info(err.Error())
-		} else if e.Alarm != "" {
-			logContext := LogContext{Alarm: e.Alarm}
-			GetLogger(r).ErrorC(logContext, err.Error())
-		} else {
-			GetLogger(r).Error(err.Error())
+		if logger != nil {
+			if e.Status >= http.StatusBadRequest && e.Status < http.StatusInternalServerError {
+				logger.Info(err.Error())
+			} else if e.Alarm != "" {
+				logContext := LogContext{Alarm: e.Alarm}
+				logger.ErrorC(logContext, err.Error())
+			} else {
+				logger.Error(err.Error())
+			}
 		}
 		e.Response(w)
 	default:
-		GetLogger(r).Error(err.Error())
+		if logger != nil {
+			logger.Error(err.Error())
+		}
 		NewServerError("").Response(w)
 	}
 }

@@ -242,6 +242,38 @@ This example creates the following log records:
 
 Note that the log context passed to **WithLogContext** middleware must follow the type **govice.LogContext**. This is required because the middleware sets the transactionID and correlator in this context.
 
+The `Pipeline` simplifies the creation of a list of middlewares. The previous example would be:
+
+```go
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/Telefonica/govice"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Hello world")
+}
+
+func main() {
+	// Force UTC time zone (used in time field of the log records)
+	time.Local = time.UTC
+	// Create the context for the logger instance
+	ctxt := govice.LogContext{Service: "logger", Component: "demo"}
+	// Create the list of middlewares for the pipeline (excluding the last handler)
+	mws := []func(http.HandlerFunc) http.HandlerFunc{
+		govice.WithLogContext(&ctxt),
+		govice.WithLog,
+	}
+	http.HandleFunc("/", govice.Pipeline(mws, handler))
+	http.ListenAndServe(":8080", nil)
+}
+```
+
 ## Errors and alarms
 
 This library defines some custom errors. Errors store information for logging, and to generate the HTTP response.
@@ -270,6 +302,20 @@ The function `func ReplyWithError(w http.ResponseWriter, r *http.Request, err er
 
  - It generates a HTTP response using a standard error. If the error is of type **govice.Error**, then it is casted to retrieve all the information; otherwise, it replies with a server error.
  - It also logs the error using the logger in the request context. Note that it depends on the **WithLogContext** middleware. If the status code associated to the error is 4xx, then it is logged with **INFO** level; otherwise, with **ERROR** level. If the error contains an alarm identifier, it is also logged.
+
+## Additional utilities
+
+It provides a simple utility to create a HTTP JSON response by following 2 steps:
+ - Add the `Content-Type` header to `application/json`
+ - Marshal a golang type to JSON. If the marshalling fails, it replies with a govice error.
+
+```go
+func handler(w http.ResponseWriter, r *http.Request) {
+	// Object to be serialized to JSON in the HTTP response
+	resp := govice.LogContext{Service: "logger", Component: "demo"}
+	govice.WriteJSON(w, r, &resp)
+}
+```
 
 ## License
 
